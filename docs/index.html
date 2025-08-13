@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Snake Game (CheerpJ)</title>
+    <style>
+      html, body { height: 100%; margin: 0; background: #111; color: #ddd; font-family: Arial, sans-serif; }
+      header { text-align: center; padding: 12px; color: #9fd; }
+      #canvasContainer { display: flex; align-items: center; justify-content: center; height: calc(100% - 56px); }
+      .hint { text-align: center; font-size: 12px; opacity: 0.8; }
+      .loading { text-align: center; padding-top: 20px; color: #9fd; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h3>Snake Game</h3>
+      <div class="hint">Running Java Swing in the browser via CheerpJ</div>
+    </header>
+    <div id="canvasContainer">
+      <div class="loading" id="loading">Loading Java runtime…</div>
+    </div>
+    <script src="https://cjrtnc.leaningtech.com/3.0/loader.js"></script>
+    <script>
+      (async () => {
+        await cheerpjInit();
+        // Create a display canvas for AWT/Swing; size will be set by the Java app window
+        cheerpjCreateDisplay();
+        document.getElementById('loading')?.remove();
+        // Run the main class from the JAR located in this folder
+        await cheerpjRunMain("App", "SnakeGame.jar");
+      })();
+    </script>
+  </body>
+  </html>
+

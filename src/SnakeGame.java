@@ -332,29 +332,34 @@ public class SnakeGame extends JFrame {
         loadEatingSound();
         loadMultiplierSound();
     }
+
+	private AudioInputStream loadAudioFromResourcesOrFile(String relativePath) throws Exception {
+		// First, try to load from classpath resources (inside JAR)
+		try {
+			ClassLoader cl = getClass().getClassLoader();
+			java.net.URL url = cl.getResource(relativePath);
+			if (url != null) {
+				return AudioSystem.getAudioInputStream(url);
+			}
+		} catch (Exception ignored) {
+		}
+		// Fallback to filesystem paths (dev/local runs)
+		File file = new File(relativePath);
+		if (!file.exists()) {
+			file = new File("src/" + relativePath);
+			if (!file.exists()) {
+				file = new File("bin/" + relativePath);
+			}
+		}
+		return AudioSystem.getAudioInputStream(file);
+	}
     
-    private void loadBackgroundMusic() {
+	private void loadBackgroundMusic() {
         try {
-            // Fix the path to use relative path from the project root
-            File file = new File("sounds/background.wav");
-            if (!file.exists()) {
-                // Try alternative paths
-                file = new File("src/sounds/background.wav");
-                if (!file.exists()) {
-                    file = new File("bin/sounds/background.wav");
-                }
-            }
-            
-            if (!file.exists()) {
-                throw new Exception("Background music file not found. Tried: " + file.getAbsolutePath());
-            }
-    
-            AudioInputStream audioIn = AudioSystem.getAudioInputStream(file);
+			AudioInputStream audioIn = loadAudioFromResourcesOrFile("sounds/background.wav");
             backgroundMusic = AudioSystem.getClip();
             backgroundMusic.open(audioIn);
             backgroundMusic.setFramePosition(0); // start at beginning
-    
-            System.out.println("Background music loaded from: " + file.getAbsolutePath());
         } catch (UnsupportedAudioFileException e) {
             System.out.println("Unsupported audio file: " + e.getMessage());
         } catch (LineUnavailableException e) {
@@ -364,43 +369,23 @@ public class SnakeGame extends JFrame {
         }
     }
     
-    private void loadEatingSound() {
+	private void loadEatingSound() {
         try {
-            File file = new File("sounds/eat.wav");
-            if (!file.exists()) {
-                file = new File("src/sounds/eat.wav");
-            }
-            if (!file.exists()) {
-                file = new File("bin/sounds/eat.wav");
-            }
-            
-            if (file.exists()) {
-                AudioInputStream audioIn = AudioSystem.getAudioInputStream(file);
-                eatingSound = AudioSystem.getClip();
-                eatingSound.open(audioIn);
-                System.out.println("Eating sound loaded");
-            }
+			AudioInputStream audioIn = loadAudioFromResourcesOrFile("sounds/eat.wav");
+			eatingSound = AudioSystem.getClip();
+			eatingSound.open(audioIn);
+			System.out.println("Eating sound loaded");
         } catch (Exception e) {
             System.out.println("Failed to load eating sound: " + e.getMessage());
         }
     }
     
-    private void loadMultiplierSound() {
+	private void loadMultiplierSound() {
         try {
-            File file = new File("sounds/multiplier.wav");
-            if (!file.exists()) {
-                file = new File("src/sounds/multiplier.wav");
-            }
-            if (!file.exists()) {
-                file = new File("bin/sounds/multiplier.wav");
-            }
-            
-            if (file.exists()) {
-                AudioInputStream audioIn = AudioSystem.getAudioInputStream(file);
-                multiplierSound = AudioSystem.getClip();
-                multiplierSound.open(audioIn);
-                System.out.println("Multiplier sound loaded");
-            }
+			AudioInputStream audioIn = loadAudioFromResourcesOrFile("sounds/multiplier.wav");
+			multiplierSound = AudioSystem.getClip();
+			multiplierSound.open(audioIn);
+			System.out.println("Multiplier sound loaded");
         } catch (Exception e) {
             System.out.println("Failed to load multiplier sound: " + e.getMessage());
         }

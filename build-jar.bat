@@ -13,20 +13,28 @@ if errorlevel 1 (
 REM Prepare dist directory
 if exist dist rmdir /S /Q dist
 mkdir dist
-mkdir dist\sounds
-
-REM Copy resources
-if exist src\sounds xcopy /E /I /Y src\sounds dist\sounds >nul 2>nul
 
 REM Create manifest
 echo Main-Class: App> dist\MANIFEST.MF
 
-REM Create jar
+REM Create jar with classes
 pushd bin
 jar cfm ..\dist\SnakeGame.jar ..\dist\MANIFEST.MF .
 popd
 
-echo Built dist\SnakeGame.jar
+REM Add resources (sounds) inside JAR at sounds/
+if exist src\sounds (
+  pushd src
+  jar uf ..\dist\SnakeGame.jar sounds
+  popd
+)
+
+REM Copy for GitHub Pages (docs/)
+if not exist docs mkdir docs
+copy /Y dist\SnakeGame.jar docs\SnakeGame.jar >nul
+copy /Y docs\index.html docs\index.html >nul 2>nul
+
+echo Built dist\SnakeGame.jar and copied to docs\SnakeGame.jar
 
 endlocal
 
